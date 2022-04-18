@@ -26,7 +26,7 @@ urlpatterns = [
     path('register/', u_views.register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
-    path('delete/profile', u_views.DeleteUserView.as_view(), name='delete-user'),
+    path('delete/<int:id>/', u_views.user_delete, name='delete-user'),
     path('profile/', u_views.profile, name='profile'),
 
     path('', include('blog.urls')),

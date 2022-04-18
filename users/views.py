@@ -1,3 +1,4 @@
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, UserDeleteForm
@@ -46,33 +47,13 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
 
-@login_required
-def delete_user(request):
-    if request.method == 'POST':
-        delete_form = UserDeleteForm(request.user, instance=request.user)
-        user = request.user
+@login_required(login_url='users/login.html')
+def user_delete(request, id):
+    user = User.objects.get(id=id)
+    if request.user == user:
+        logout(request)
         user.delete()
-        messages.info(request, 'Your account has been deleted.')
-        return redirect('blog-home')
-    else:
-        delete_form = UserDeleteForm(instance=request.user)
-
-    context = {
-        'delete_form': delete_form
-    }
-
-    return render(request, 'users/delete_account.html', context)
-
-
-class DeleteUserView(DeleteView, UserPassesTestMixin):
-    model = User.pk
-    success_url = '/'
-
-    def test_func(self):
-        user = self.get_object()
-        if self.request.user == user:
-            return True
-        return False
+        return redirect("blog-home")
 
 
 
